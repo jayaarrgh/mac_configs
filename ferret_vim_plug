@@ -1,0 +1,58 @@
+Changes I had to make to the ferret vim plugin to get it working on mac
+
+all inside .vim/bundle/ferret/
+
+
+========================================================================
+from autoload/ferret/plugin/private.vim
+around line 750
+
+" Base set of default arguments for each executable; these get extended by
+" ferret#private#init() upon startup.
+let s:executables={
+      \   'rg': '--vimgrep --no-heading',
+      \   'ag': '',
+      \   'ack': '--column --with-filename',
+      \   'ack-grep': '--column --with-filename'
+      \ }
+
+BECOMES
+
+let s:executables={
+      \   'rg': '--vimgrep --no-heading',
+      \   'ag': '',
+      \   'ack': '-s -H --nopager --nocolor --nogroup --column', 
+      \   'ack-grep': '--column --with-filename'
+      \ }
+
+just a change to the format options of the ack command
+
+
+========================================================================
+from plugin/ferret.vim
+around line 605
+
+command! -bang -nargs=1 -complete=customlist,ferret#private#ackcomplete Ack call ferret#private#ack(<bang>0, <q-args>)
+
+becomes
+
+command! -bang -nargs=1 -complete=customlist,ferret#private#ackcomplete Ack call ferret#private#ack(<bang>1, <q-args>)
+
+(just change 0 to 1)
+
+AND
+
+around line 871
+
+let g:FerretFormat=get(g:, 'FerretFormat', '%f:%l:%c:%m')
+
+becomes
+
+let g:FerretFormat=get(g:, 'FerretFormat','%f:%l:%m,%f:%l%m,%f %l%m')
+
+================================
+
+
+There may be more problems using the plugin on Mac.
+I mainly use it to search with a quickfix window, and occasionaly use :Acks to do replacement.
+Other commands and backends may require more alterations.
