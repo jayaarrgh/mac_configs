@@ -1,0 +1,41 @@
+[user]
+	name = Joshua Robinson
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+		required = true
+[diff]
+	tool = "vscode"
+[difftool "vscode"]
+	cmd = "code" "$LOCAL" "$REMOTE" --diff --wait
+    trustExitCode = false
+[difftool]
+    prompt = false
+
+[alias]
+	alias = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
+		
+	lg = !"git lg1"
+    lg1 = !"git lg1-specific --all"
+    lg2 = !"git lg2-specific --all"
+    lg3 = !"git lg3-specific --all"
+
+    lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+    lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+    lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
+
+; you can say git dfy master or git dfy <commit-hash> to view the diff between your current and whatever input
+	dfy = difftool -y -x "vimdiff"
+	df = difftool -x "vimdiff"
+	dfc = difftool -y
+	
+; cool alias utils i made for opening all files from git  status or diff with master
+;   ed = !vim $(git status -s | cut -d' ' -f2)         ; this  also works 
+	ed = !vim $(git status -s | awk '{print $2}')
+	ded = !vim $(git diff master --name-only)
+
+; another cool util - create function that accepts parameter for what to edit the diff against
+; ${1:master} == use master unless you give a command arg (origin/<branchname>) or <commit-hash>
+	dfed = !"f() { vim $(git diff ${1:-master} --name-only); }; f"
+	code = !"f() { code $(git diff ${1:-master} --name-only); }; f"
