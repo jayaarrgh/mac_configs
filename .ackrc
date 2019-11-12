@@ -1,0 +1,11 @@
+
+# use color 
+--color
+
+--pager=less -FRSX
+
+--ignore-dir=.git
+--ignore-dir=tests/coverage
+--ignore-dir=venv
+# ignore a particular file
+--ignore-file=is:.coverage
